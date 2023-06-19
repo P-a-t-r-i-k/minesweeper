@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -15,7 +16,7 @@ public class Game {
         this.currentNumberOfMines = difficulty.getMines();
 
         this.squares = new Square[difficulty.getHeight()][difficulty.getWidth()];
-        this.createMines(this.createSquaresIndexesWithMines());
+        this.createMines(this.createIndexesOfSquaresWithMines());
     }
 
     private Difficulty getDifficulty() {
@@ -28,24 +29,37 @@ public class Game {
 
         for (int i = 0; i < this.squares.length; i++) {
             for (int j = 0; j < this.squares[i].length; j++) {
-                SquareStatus squareStatus = SquareStatus.EMPTY;
+
                 if (index == indexesOfSquaresWithMines[position]) {
-                    squareStatus = SquareStatus.MINE;
+                    this.squares[i][j] = new Square(i, j, SquareStatus.MINE);
                     position++;
+
+                    if (position == indexesOfSquaresWithMines.length) {
+                        return;
+                    }
+                } else {
+                    this.squares[i][j] = new Square(i, j, SquareStatus.EMPTY);
                 }
 
-                this.squares[i][j] = new Square(i, j, squareStatus);
                 index++;
             }
         }
     }
 
-    private int[] createSquaresIndexesWithMines() {
+    private int[] createIndexesOfSquaresWithMines() {
         int[] indexesOfSquaresWithMines = new int[this.currentNumberOfMines];
+        ArrayList<Integer> usedIndexes = new ArrayList<>();
         Random random = new Random();
 
+
         for (int i = 0; i < indexesOfSquaresWithMines.length; i++) {
-            indexesOfSquaresWithMines[i] = random.nextInt(this.squares.length * this.squares[i].length);
+            int randomIndex;
+            do {
+                randomIndex = random.nextInt(this.squares.length * this.squares[i].length);
+            } while (usedIndexes.contains(randomIndex));
+
+            indexesOfSquaresWithMines[i] = randomIndex;
+            usedIndexes.add(randomIndex);
         }
 
         Arrays.sort(indexesOfSquaresWithMines);

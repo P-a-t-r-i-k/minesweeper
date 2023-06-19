@@ -15,14 +15,14 @@ public enum Difficulty {
     }
 
     public int getWidth() {
-        return width;
+        return this.width;
     }
 
     public int getHeight() {
-        return height;
+        return this.height;
     }
 
     public int getMines() {
-        return mines;
+        return this.mines;
     }
 }

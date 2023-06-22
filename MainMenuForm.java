@@ -11,7 +11,7 @@ public class MainMenuForm {
     private JPanel buttonPanel;
 
     public MainMenuForm() {
-        JFrame frame = new JFrame("Minesweeper");
+        JFrame frame = new JFrame(Game.TITLE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(this.mainPanel);
         frame.pack();
@@ -20,7 +20,8 @@ public class MainMenuForm {
         this.newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("New Game");
+                new GameWindowForm();
+                frame.dispose();
             }
         });
 
@@ -34,7 +35,8 @@ public class MainMenuForm {
         this.leaderboardButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Leaderboard");
+                new LeaderBoardForm();
+                frame.dispose();
             }
         });
 

@@ -3,10 +3,12 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Game {
+    public static final String TITLE = "Minesweeper";
     private final Square[][] squares;
     private GameStatus gameStatus;
     private final int maximumNumberOfMines;
     private int currentNumberOfMines;
+    private boolean saved;
 
     public Game() {
         this.gameStatus = GameStatus.UNFINISHED;
@@ -18,6 +20,8 @@ public class Game {
         this.squares = new Square[difficulty.getHeight()][difficulty.getWidth()];
         this.createMines(this.createIndexesOfSquaresWithMines());
         this.addNumbersToSquares();
+
+        this.saved = false;
     }
 
     public void clickSquare(int row, int column) {
@@ -32,6 +36,14 @@ public class Game {
 
     public void flagSquare(int row, int column) {
         this.squares[row][column].setFlagged(!this.squares[row][column].isFlagged());
+    }
+
+    public boolean isSaved() {
+        return this.saved;
+    }
+
+    public void setSaved(boolean saved) {
+        this.saved = saved;
     }
 
     private Difficulty getDifficulty() {

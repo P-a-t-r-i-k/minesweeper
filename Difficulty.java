@@ -6,12 +6,14 @@ public enum Difficulty {
     private final int width;
     private final int height;
     private final int mines;
+    private final int difficultyBonus;
 
 
     private Difficulty(int width, int height, int mines) {
         this.width = width;
         this.height = height;
         this.mines = mines;
+        this.difficultyBonus = mines * 100;
     }
 
     public int getWidth() {
@@ -24,5 +26,9 @@ public enum Difficulty {
 
     public int getMines() {
         return this.mines;
+    }
+
+    public int getDifficultyBonus() {
+        return this.difficultyBonus;
     }
 }

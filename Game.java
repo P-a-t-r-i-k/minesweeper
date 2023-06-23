@@ -1,14 +1,16 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 
 public class Game {
     public static final String TITLE = "Minesweeper";
+    public static final String LEADERBOARD_FILE = ".\\leaderboard.ldr";
+    public static final int VERSION = 1;
     private final Square[][] squares;
     private GameStatus gameStatus;
     private final int maximumNumberOfMines;
     private int currentNumberOfMines;
     private boolean saved;
+    private HashMap<String, Integer> leaderboard;
 
     public Game() {
         this.gameStatus = GameStatus.UNFINISHED;
@@ -22,6 +24,7 @@ public class Game {
         this.addNumbersToSquares();
 
         this.saved = false;
+        this.leaderboard = new HashMap<>();
     }
 
     public void clickSquare(int row, int column) {
@@ -161,6 +164,48 @@ public class Game {
                     this.squares[currentSquare.getRow() + i][currentSquare.getColumn() + j].setClicked(true);
                 }
             }
+        }
+    }
+
+    private void changeLeaderboard() throws IOException {
+        int timeBonus = 500; // change time bonus later
+        int currentScore = this.getDifficulty().getDifficultyBonus() + timeBonus;
+
+        this.loadLeaderboard();
+
+        // change leaderboard here
+
+        this.saveLeaderboard();
+    }
+
+    private void loadLeaderboard() throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(new File(Game.LEADERBOARD_FILE));
+        DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+        this.leaderboard.clear();
+
+        int version = dataInputStream.readInt();
+        if (version == 1) {
+            boolean reachedEndOfFile = false;
+            while (!reachedEndOfFile) {
+                try {
+                    String player = dataInputStream.readUTF();
+                    int score = dataInputStream.readInt();
+                    this.leaderboard.put(player, score);
+                } catch (EOFException e) {
+                    reachedEndOfFile = true;
+                }
+            }
+        }
+    }
+
+    public void saveLeaderboard() throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(new File(Game.LEADERBOARD_FILE));
+        DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
+
+        dataOutputStream.writeInt(Game.VERSION);
+        for (String player : this.leaderboard.keySet()) {
+            dataOutputStream.writeUTF(player);
+            dataOutputStream.writeInt(this.leaderboard.get(player));
         }
     }
 }

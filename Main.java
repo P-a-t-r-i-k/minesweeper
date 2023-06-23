@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public class Main {
     public static void main(String[] args) {
         /*
@@ -8,5 +10,13 @@ public class Main {
          */
 
         new MainMenuForm();
+        /*
+        try {
+            new Game().saveLeaderboard();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+         */
     }
 }

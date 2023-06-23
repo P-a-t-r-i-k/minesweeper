@@ -41,19 +41,19 @@ public class LeaderBoardForm {
     }
 
     private void addRows(DefaultTableModel model) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(new File(".\\leaderboard.ldr"));
+        FileInputStream fileInputStream = new FileInputStream(new File(Game.LEADERBOARD_FILE));
         DataInputStream dataInputStream = new DataInputStream(fileInputStream);
 
         int version = dataInputStream.readInt();
         if (version == 1) {
-            boolean run = true;
-            while (run) {
+            boolean reachedEndOfFile = false;
+            while (!reachedEndOfFile) {
                 try {
                     String player = dataInputStream.readUTF();
                     int score = dataInputStream.readInt();
                     model.addRow(new Object[]{player, score});
                 } catch (EOFException e) {
-                    run = false;
+                    reachedEndOfFile = true;
                 }
             }
         }

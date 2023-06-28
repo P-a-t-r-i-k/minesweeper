@@ -8,14 +8,14 @@ public class GameWindowForm {
     private JButton mainMenuButton;
     private final Game game;
 
-    public GameWindowForm() {
+    public GameWindowForm(Difficulty difficulty) {
         JFrame frame = new JFrame(Game.TITLE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(this.mainPanel);
         frame.pack();
         frame.setVisible(true);
 
-        this.game = new Game();
+        this.game = new Game(difficulty);
 
         this.saveGameButton.addActionListener(new ActionListener() {
             @Override
@@ -27,8 +27,8 @@ public class GameWindowForm {
         this.mainMenuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new MainMenuForm();
                 frame.dispose();
+                new MainMenuForm();
             }
         });
     }

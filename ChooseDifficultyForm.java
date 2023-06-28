@@ -2,48 +2,44 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MainMenuForm {
+public class ChooseDifficultyForm {
     private JPanel mainPanel;
-    private JButton newGameButton;
-    private JButton loadGameButton;
-    private JButton leaderboardButton;
-    private JButton exitButton;
     private JPanel buttonPanel;
+    private JButton beginnerDiffButton;
+    private JButton intermediateDiffButton;
+    private JButton expertDiffButton;
 
-    public MainMenuForm() {
+    public ChooseDifficultyForm() {
         JFrame frame = new JFrame(Game.TITLE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(this.mainPanel);
         frame.pack();
         frame.setVisible(true);
 
-        this.newGameButton.addActionListener(new ActionListener() {
+
+        this.beginnerDiffButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                new ChooseDifficultyForm();
+                new GameWindowForm(Difficulty.BEGINNER);
             }
         });
 
-        this.loadGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Load Game");
-            }
-        });
 
-        this.leaderboardButton.addActionListener(new ActionListener() {
+        this.intermediateDiffButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                new LeaderboardForm();
+                new GameWindowForm(Difficulty.INTERMEDIATE);
             }
         });
 
-        this.exitButton.addActionListener(new ActionListener() {
+
+        this.expertDiffButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
+                new GameWindowForm(Difficulty.EXPERT);
             }
         });
     }

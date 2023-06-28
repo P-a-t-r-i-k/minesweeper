@@ -9,15 +9,16 @@ public class Game {
     public static final int LEADERBOARD_SIZE = 5;
     private final Square[][] squares;
     private GameStatus gameStatus;
+    private final Difficulty difficulty;
     private final int maximumNumberOfMines;
     private int currentNumberOfMines;
     private boolean saved;
     private ArrayList<LeaderboardEntry> leaderboard;
 
-    public Game() {
+    public Game(Difficulty difficulty) {
         this.gameStatus = GameStatus.UNFINISHED;
 
-        Difficulty difficulty = this.getDifficulty();
+        this.difficulty = difficulty;
         this.maximumNumberOfMines = difficulty.getMines();
         this.currentNumberOfMines = difficulty.getMines();
 
@@ -28,11 +29,13 @@ public class Game {
         this.saved = false;
         this.leaderboard = new ArrayList<>();
 
+        /*
         try {
             this.changeLeaderboard();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+         */
     }
 
     public void clickSquare(int row, int column) {
@@ -58,7 +61,7 @@ public class Game {
     }
 
     private Difficulty getDifficulty() {
-        return Difficulty.BEGINNER;
+        return this.difficulty;
     }
 
     private void createMines(int[] indexesOfSquaresWithMines) {
@@ -93,7 +96,7 @@ public class Game {
         for (int i = 0; i < indexesOfSquaresWithMines.length; i++) {
             int randomIndex;
             do {
-                randomIndex = random.nextInt(this.squares.length * this.squares[i].length);
+                randomIndex = random.nextInt(this.squares.length * this.squares[0].length);
             } while (usedIndexes.contains(randomIndex));
 
             indexesOfSquaresWithMines[i] = randomIndex;

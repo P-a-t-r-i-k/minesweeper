@@ -4,14 +4,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 
-public class LeaderBoardForm {
+public class LeaderboardForm {
     private JPanel mainPanel;
     private JPanel tablePanel;
     private JPanel buttonPanel;
     private JButton mainMenuButton;
     private JTable leaderboardTable;
 
-    public LeaderBoardForm() {
+    public LeaderboardForm() {
         JFrame frame = new JFrame(Game.TITLE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(this.mainPanel);
@@ -34,8 +34,8 @@ public class LeaderBoardForm {
         this.mainMenuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new MainMenuForm();
                 frame.dispose();
+                new MainMenuForm();
             }
         });
     }

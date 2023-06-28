@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
@@ -5,12 +6,13 @@ public class Game {
     public static final String TITLE = "Minesweeper";
     public static final String LEADERBOARD_FILE = ".\\leaderboard.ldr";
     public static final int VERSION = 1;
+    public static final int LEADERBOARD_SIZE = 5;
     private final Square[][] squares;
     private GameStatus gameStatus;
     private final int maximumNumberOfMines;
     private int currentNumberOfMines;
     private boolean saved;
-    private HashMap<String, Integer> leaderboard;
+    private ArrayList<LeaderboardEntry> leaderboard;
 
     public Game() {
         this.gameStatus = GameStatus.UNFINISHED;
@@ -24,7 +26,13 @@ public class Game {
         this.addNumbersToSquares();
 
         this.saved = false;
-        this.leaderboard = new HashMap<>();
+        this.leaderboard = new ArrayList<>();
+
+        try {
+            this.changeLeaderboard();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void clickSquare(int row, int column) {
@@ -168,12 +176,15 @@ public class Game {
     }
 
     private void changeLeaderboard() throws IOException {
-        int timeBonus = 500; // change time bonus later
+        int timeBonus = 4000; // change time bonus later
         int currentScore = this.getDifficulty().getDifficultyBonus() + timeBonus;
 
         this.loadLeaderboard();
 
-        // change leaderboard here
+        int minScoreInLeaderboard = this.leaderboard.get(this.leaderboard.size() - 1).getScore();
+        if (this.leaderboard.size() < Game.LEADERBOARD_SIZE || currentScore > minScoreInLeaderboard) {
+            this.addLeaderboardEntry(currentScore);
+        }
 
         this.saveLeaderboard();
     }
@@ -190,22 +201,36 @@ public class Game {
                 try {
                     String player = dataInputStream.readUTF();
                     int score = dataInputStream.readInt();
-                    this.leaderboard.put(player, score);
+                    this.leaderboard.add(new LeaderboardEntry(player, score));
                 } catch (EOFException e) {
                     reachedEndOfFile = true;
                 }
             }
         }
+
+        Collections.sort(this.leaderboard);
+        Collections.reverse(this.leaderboard);
     }
 
-    public void saveLeaderboard() throws IOException {
+    private void addLeaderboardEntry(int score) {
+        if (this.leaderboard.size() == Game.LEADERBOARD_SIZE) {
+            this.leaderboard.remove(this.leaderboard.size() - 1);
+        }
+
+        String playerName = JOptionPane.showInputDialog("You reached score " + score + " and placed yourself in the leaderboard. Please enter your name:");
+        this.leaderboard.add(new LeaderboardEntry(playerName, score));
+        Collections.sort(this.leaderboard);
+        Collections.reverse(this.leaderboard);
+    }
+
+    private void saveLeaderboard() throws IOException {
         FileOutputStream fileOutputStream = new FileOutputStream(new File(Game.LEADERBOARD_FILE));
         DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
 
         dataOutputStream.writeInt(Game.VERSION);
-        for (String player : this.leaderboard.keySet()) {
-            dataOutputStream.writeUTF(player);
-            dataOutputStream.writeInt(this.leaderboard.get(player));
+        for (LeaderboardEntry leaderboardEntry : this.leaderboard) {
+            dataOutputStream.writeUTF(leaderboardEntry.getName());
+            dataOutputStream.writeInt(leaderboardEntry.getScore());
         }
     }
 }

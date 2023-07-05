@@ -1,4 +1,5 @@
 public class Square {
+    public static final int SIZE = 32;
     private final int row;
     private final int column;
     private boolean clicked;

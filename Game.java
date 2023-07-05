@@ -15,7 +15,7 @@ public class Game {
     private boolean saved;
     private ArrayList<LeaderboardEntry> leaderboard;
 
-    public Game(Difficulty difficulty) {
+    public Game(Difficulty difficulty, GameWindow gameWindow) {
         this.gameStatus = GameStatus.UNFINISHED;
 
         this.difficulty = difficulty;
@@ -29,6 +29,8 @@ public class Game {
         this.saved = false;
         this.leaderboard = new ArrayList<>();
 
+        gameWindow.changeLabel(0, 0);
+        gameWindow.changeLabel(9, 9);
         /*
         try {
             this.changeLeaderboard();

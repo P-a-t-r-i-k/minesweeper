@@ -21,7 +21,8 @@ public class ChooseDifficultyForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                new GameWindowForm(Difficulty.BEGINNER);
+                //new GameWindowForm(Difficulty.BEGINNER);
+                new GameWindow(Difficulty.BEGINNER);
             }
         });
 
@@ -30,7 +31,8 @@ public class ChooseDifficultyForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                new GameWindowForm(Difficulty.INTERMEDIATE);
+                // new GameWindowForm(Difficulty.INTERMEDIATE);
+                new GameWindow(Difficulty.INTERMEDIATE);
             }
         });
 
@@ -39,7 +41,8 @@ public class ChooseDifficultyForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                new GameWindowForm(Difficulty.EXPERT);
+                // new GameWindowForm(Difficulty.EXPERT);
+                new GameWindow(Difficulty.EXPERT);
             }
         });
     }

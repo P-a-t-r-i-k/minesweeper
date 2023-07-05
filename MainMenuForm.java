@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,18 +11,19 @@ public class MainMenuForm {
     private JButton exitButton;
     private JPanel buttonPanel;
 
-    public MainMenuForm() {
+    public MainMenuForm(Point location) {
         JFrame frame = new JFrame(Game.TITLE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(this.mainPanel);
         frame.pack();
         frame.setVisible(true);
+        frame.setLocation(location);
 
         this.newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                new ChooseDifficultyForm();
+                new ChooseDifficultyForm(frame.getLocation());
             }
         });
 
@@ -36,7 +38,7 @@ public class MainMenuForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                new LeaderboardForm();
+                new LeaderboardForm(frame.getLocation());
             }
         });
 

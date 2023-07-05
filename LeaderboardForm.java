@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -11,12 +12,13 @@ public class LeaderboardForm {
     private JButton mainMenuButton;
     private JTable leaderboardTable;
 
-    public LeaderboardForm() {
+    public LeaderboardForm(Point location) {
         JFrame frame = new JFrame(Game.TITLE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(this.mainPanel);
-        frame.pack();
+        frame.setSize(250, 160);
         frame.setVisible(true);
+        frame.setLocation(location);
 
         DefaultTableModel model = (DefaultTableModel) this.leaderboardTable.getModel();
         model.addColumn("Player");
@@ -35,7 +37,7 @@ public class LeaderboardForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                new MainMenuForm();
+                new MainMenuForm(location);
             }
         });
     }

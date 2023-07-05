@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class GameWindow {
+    public static final int WIDTH = 1060;
+    public static final int HEIGHT = 640;
     private JPanel mainPanel;
     private final JButton saveGameButton;
     private final JButton mainMenuButton;
@@ -11,16 +13,17 @@ public class GameWindow {
     private final JLabel[][] labels;
     private final Game game;
 
-    public GameWindow(Difficulty difficulty) {
+    public GameWindow(Difficulty difficulty, Point location) {
         JFrame frame = new JFrame(Game.TITLE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(1200, 800);
-        this.labels = new JLabel[difficulty.getWidth()][difficulty.getHeight()];
+        frame.setSize(GameWindow.WIDTH, GameWindow.HEIGHT);
+        this.labels = new JLabel[difficulty.getHeight()][difficulty.getWidth()];
 
         this.difficulty = difficulty;
         this.addImageLabels(frame);
 
         frame.setVisible(true);
+        frame.setLocation(location);
 
         this.game = new Game(difficulty, this);
 
@@ -28,7 +31,6 @@ public class GameWindow {
         frame.add(buttonPanel, BorderLayout.SOUTH);
 
         this.saveGameButton = new JButton("Save Game");
-        //this.saveGameButton.setPreferredSize(new Dimension(200, 26));
         buttonPanel.add(this.saveGameButton, BorderLayout.SOUTH);
 
         this.mainMenuButton = new JButton("Main Menu");
@@ -45,7 +47,7 @@ public class GameWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                new MainMenuForm();
+                new MainMenuForm(location);
             }
         });
     }
@@ -69,12 +71,11 @@ public class GameWindow {
     }
 
     private void addImageLabels(JFrame frame) {
-        int indentation = 50;
         for (int i = 0; i < this.difficulty.getHeight(); i++) {
             for (int j = 0; j < this.difficulty.getWidth(); j++) {
                 JLabel imageLabel = new JLabel(new ImageIcon(".\\images\\unclicked.png"));
                 Dimension size = imageLabel.getPreferredSize();
-                imageLabel.setBounds(indentation + j * Square.SIZE,  indentation + i * Square.SIZE, size.width, size.height);
+                imageLabel.setBounds(this.difficulty.getIndentationX() + j * Square.SIZE,  this.difficulty.getIndentationY() + i * Square.SIZE, size.width, size.height);
                 this.labels[i][j] = imageLabel;
                 frame.add(imageLabel);
             }

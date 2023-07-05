@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.io.IOException;
 
 public class Main {
@@ -9,7 +10,7 @@ public class Main {
 
          */
 
-        new MainMenuForm();
+        new MainMenuForm(new Point(0, 0));
         /*
         try {
             new Game().saveLeaderboard();

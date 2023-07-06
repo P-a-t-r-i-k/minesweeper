@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.*;
 
@@ -13,7 +15,7 @@ public class Game {
     private final int maximumNumberOfMines;
     private int currentNumberOfMines;
     private boolean saved;
-    private ArrayList<LeaderboardEntry> leaderboard;
+    private final ArrayList<LeaderboardEntry> leaderboard;
 
     public Game(Difficulty difficulty, GameWindow gameWindow) {
         this.gameStatus = GameStatus.UNFINISHED;
@@ -29,15 +31,12 @@ public class Game {
         this.saved = false;
         this.leaderboard = new ArrayList<>();
 
-        gameWindow.changeLabel(0, 0);
-        gameWindow.changeLabel(9, 9);
         /*
-        try {
-            this.changeLeaderboard();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-         */
+        gameWindow.changeLabel(0, 0, this.squares[0][0]);
+        gameWindow.changeLabel(9, 9, this.squares[9][9]);
+        gameWindow.changeLabel(9, 6, this.squares[9][6]);
+        gameWindow.changeLabel(2, 1, this.squares[2][1]);
+        */
     }
 
     public void clickSquare(int row, int column) {
@@ -60,6 +59,10 @@ public class Game {
 
     public void setSaved(boolean saved) {
         this.saved = saved;
+    }
+
+    public Square getSquare(int row, int column) {
+        return this.squares[row][column];
     }
 
     private Difficulty getDifficulty() {

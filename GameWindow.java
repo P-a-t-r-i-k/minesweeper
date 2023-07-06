@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class GameWindow {
     public static final int WIDTH = 1060;
@@ -52,8 +54,32 @@ public class GameWindow {
         });
     }
 
-    public void changeLabel(int row, int column) {
-        this.labels[row][column].setIcon(new ImageIcon(".\\images\\flag.png"));
+    public void run() {
+        System.out.println("5");
+        while (true) {
+            MouseAdapter mouseAdapter = new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    super.mouseClicked(e);
+                }
+            };
+        }
+    }
+
+    public void changeLabelIcon(int row, int column, Square square) {
+        ImageIcon imageIcon;
+
+        if (square.isFlagged()) {
+            imageIcon = new ImageIcon(".\\images\\flag.png");
+        } else if (square.getSquareStatus() == SquareStatus.MINE) {
+            imageIcon = new ImageIcon(".\\images\\exploded_mine.png");
+        } else if (square.getSquareStatus() == SquareStatus.EMPTY) {
+            imageIcon = new ImageIcon(".\\images\\empty.png");
+        } else {
+            imageIcon = new ImageIcon(".\\images\\" + square.getNearbyMines() + ".png");
+        }
+
+        this.labels[row][column].setIcon(imageIcon);
     }
 
     private void saveGame() {

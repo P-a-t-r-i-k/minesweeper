@@ -9,61 +9,67 @@ public class GameWindow {
     public static final int WIDTH = 1060;
     public static final int HEIGHT = 640;
     private JPanel mainPanel;
-    private final JButton saveGameButton;
-    private final JButton mainMenuButton;
     private final Difficulty difficulty;
     private final JLabel[][] labels;
     private final Game game;
+    private final JFrame frame;
 
     public GameWindow(Difficulty difficulty, Point location) {
-        JFrame frame = new JFrame(Game.TITLE);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(GameWindow.WIDTH, GameWindow.HEIGHT);
+        this.frame = new JFrame(Game.TITLE);
+        this.frame.setLayout(new BorderLayout());
+        this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.frame.setSize(GameWindow.WIDTH, GameWindow.HEIGHT);
         this.labels = new JLabel[difficulty.getHeight()][difficulty.getWidth()];
 
         this.difficulty = difficulty;
-        this.addImageLabels(frame);
+        this.addImageLabels();
 
-        frame.setVisible(true);
-        frame.setLocation(location);
+        this.frame.setVisible(true);
+        this.frame.setLocation(location);
 
         this.game = new Game(difficulty, this);
 
         JPanel buttonPanel = new JPanel();
-        frame.add(buttonPanel, BorderLayout.SOUTH);
+        this.frame.add(buttonPanel, BorderLayout.SOUTH);
 
-        this.saveGameButton = new JButton("Save Game");
-        buttonPanel.add(this.saveGameButton, BorderLayout.SOUTH);
+        JButton saveGameButton = new JButton("Save Game");
+        buttonPanel.add(saveGameButton);
 
-        this.mainMenuButton = new JButton("Main Menu");
-        buttonPanel.add(this.mainMenuButton, BorderLayout.SOUTH);
+        JButton mainMenuButton = new JButton("Main Menu");
+        buttonPanel.add(mainMenuButton);
 
-        this.saveGameButton.addActionListener(new ActionListener() {
+        saveGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 GameWindow.this.saveGame();
             }
         });
 
-        this.mainMenuButton.addActionListener(new ActionListener() {
+        mainMenuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
                 new MainMenuForm(location);
             }
         });
+
+        this.run();
     }
 
     public void run() {
-        System.out.println("5");
-        while (true) {
-            MouseAdapter mouseAdapter = new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    super.mouseClicked(e);
-                }
-            };
-        }
+        MouseAdapter mouseAdapter = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                int row = (int)((e.getLocationOnScreen().getY() - GameWindow.this.difficulty.getIndentationY()) / Square.SIZE);
+                int column = (int)((e.getLocationOnScreen().getX() - GameWindow.this.difficulty.getIndentationX()) / Square.SIZE);
+                GameWindow.this.changeLabelIcon(row, column, GameWindow.this.game.getSquare(row, column));
+                // System.out.println(e.getX() + " , " + e.getY());
+            }
+        };
+
+        this.frame.addMouseListener(mouseAdapter);
+
     }
 
     public void changeLabelIcon(int row, int column, Square square) {
@@ -96,14 +102,15 @@ public class GameWindow {
         }
     }
 
-    private void addImageLabels(JFrame frame) {
+    private void addImageLabels() {
         for (int i = 0; i < this.difficulty.getHeight(); i++) {
             for (int j = 0; j < this.difficulty.getWidth(); j++) {
                 JLabel imageLabel = new JLabel(new ImageIcon(".\\images\\unclicked.png"));
-                Dimension size = imageLabel.getPreferredSize();
-                imageLabel.setBounds(this.difficulty.getIndentationX() + j * Square.SIZE,  this.difficulty.getIndentationY() + i * Square.SIZE, size.width, size.height);
+                int x = this.difficulty.getIndentationX() + j * Square.SIZE;
+                int y = this.difficulty.getIndentationY() + i * Square.SIZE;
+                imageLabel.setBounds(this.difficulty.getIndentationX() + j * Square.SIZE,  this.difficulty.getIndentationY() + i * Square.SIZE, Square.SIZE, Square.SIZE);
                 this.labels[i][j] = imageLabel;
-                frame.add(imageLabel);
+                this.frame.add(imageLabel, BorderLayout.CENTER);
             }
         }
     }

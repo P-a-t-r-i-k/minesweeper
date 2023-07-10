@@ -32,8 +32,7 @@ public class ChooseDifficultyForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                GameWindow gameWindow = new GameWindow(Difficulty.INTERMEDIATE, location);
-                Main.setGameWindow(gameWindow);
+                new GameWindow(Difficulty.INTERMEDIATE, location);
             }
         });
 

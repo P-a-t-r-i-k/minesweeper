@@ -1,6 +1,4 @@
 import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.*;
 
@@ -16,9 +14,11 @@ public class Game {
     private int currentNumberOfMines;
     private boolean saved;
     private final ArrayList<LeaderboardEntry> leaderboard;
+    private final GameWindow gameWindow;
 
     public Game(Difficulty difficulty, GameWindow gameWindow) {
         this.gameStatus = GameStatus.UNFINISHED;
+        this.gameWindow = gameWindow;
 
         this.difficulty = difficulty;
         this.maximumNumberOfMines = difficulty.getMines();
@@ -30,17 +30,11 @@ public class Game {
 
         this.saved = false;
         this.leaderboard = new ArrayList<>();
-
-        /*
-        gameWindow.changeLabel(0, 0, this.squares[0][0]);
-        gameWindow.changeLabel(9, 9, this.squares[9][9]);
-        gameWindow.changeLabel(9, 6, this.squares[9][6]);
-        gameWindow.changeLabel(2, 1, this.squares[2][1]);
-        */
     }
 
     public void clickSquare(int row, int column) {
         this.squares[row][column].setClicked(true);
+        this.gameWindow.changeLabelIconLeftClick(row, column, this.squares[row][column]);
 
         if (this.squares[row][column].getSquareStatus() == SquareStatus.EMPTY) {
             this.showNearbyEmptySquares(this.squares[row][column]);
@@ -51,6 +45,7 @@ public class Game {
 
     public void flagSquare(int row, int column) {
         this.squares[row][column].setFlagged(!this.squares[row][column].isFlagged());
+        this.gameWindow.changeLabelIconRightClick(row, column, this.squares[row][column]);
     }
 
     public boolean isSaved() {
@@ -63,6 +58,10 @@ public class Game {
 
     public Square getSquare(int row, int column) {
         return this.squares[row][column];
+    }
+
+    public GameStatus getGameStatus() {
+        return this.gameStatus;
     }
 
     private Difficulty getDifficulty() {
@@ -155,6 +154,7 @@ public class Game {
             Square currentSquare = squaresToCheck.get(0);
             squaresToCheck.remove(currentSquare);
             currentSquare.setClicked(true);
+            this.gameWindow.changeLabelIconLeftClick(currentSquare.getRow(), currentSquare.getColumn(), currentSquare);
 
             this.addNearbyEmptySquares(currentSquare, squaresToCheck);
         }
@@ -178,6 +178,7 @@ public class Game {
                     }
                 } else if (this.squares[currentSquare.getRow() + i][currentSquare.getColumn() + j].getSquareStatus() == SquareStatus.NUMBER) {
                     this.squares[currentSquare.getRow() + i][currentSquare.getColumn() + j].setClicked(true);
+                    this.gameWindow.changeLabelIconLeftClick(currentSquare.getRow() + i, currentSquare.getColumn() + j, this.squares[currentSquare.getRow() + i][currentSquare.getColumn() + j]);
                 }
             }
         }

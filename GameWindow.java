@@ -61,10 +61,26 @@ public class GameWindow {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+
+                boolean pressedLeftButton = e.getButton() == 1;
+                boolean pressedRightButton = e.getButton() == 3;
+
                 int row = (int)((e.getLocationOnScreen().getY() - GameWindow.this.difficulty.getIndentationY()) / Square.SIZE);
                 int column = (int)((e.getLocationOnScreen().getX() - GameWindow.this.difficulty.getIndentationX()) / Square.SIZE);
-                GameWindow.this.changeLabelIcon(row, column, GameWindow.this.game.getSquare(row, column));
-                // System.out.println(e.getX() + " , " + e.getY());
+
+                if (pressedLeftButton) {
+                    GameWindow.this.game.clickSquare(row, column);
+
+                    if (GameWindow.this.game.getGameStatus() == GameStatus.WIN) {
+                        JOptionPane.showMessageDialog(null,"You WON!");
+                        GameWindow.this.end();
+                    } else if (GameWindow.this.game.getGameStatus() == GameStatus.LOSS) {
+                        JOptionPane.showMessageDialog(null, "You LOST!");
+                        GameWindow.this.end();
+                    }
+                } else if (pressedRightButton) {
+                    GameWindow.this.game.flagSquare(row, column);
+                }
             }
         };
 
@@ -72,12 +88,10 @@ public class GameWindow {
 
     }
 
-    public void changeLabelIcon(int row, int column, Square square) {
+    public void changeLabelIconLeftClick(int row, int column, Square square) {
         ImageIcon imageIcon;
 
-        if (square.isFlagged()) {
-            imageIcon = new ImageIcon(".\\images\\flag.png");
-        } else if (square.getSquareStatus() == SquareStatus.MINE) {
+        if (square.getSquareStatus() == SquareStatus.MINE) {
             imageIcon = new ImageIcon(".\\images\\exploded_mine.png");
         } else if (square.getSquareStatus() == SquareStatus.EMPTY) {
             imageIcon = new ImageIcon(".\\images\\empty.png");
@@ -86,6 +100,23 @@ public class GameWindow {
         }
 
         this.labels[row][column].setIcon(imageIcon);
+    }
+
+    public void changeLabelIconRightClick(int row, int column, Square square) {
+        Icon icon = this.labels[row][column].getIcon();
+
+        if (!square.isClicked() && square.isFlagged()) {
+            icon = new ImageIcon(".\\images\\flag.png");
+        } else if (!square.isClicked()) {
+            icon = new ImageIcon(".\\images\\unclicked.png");
+        }
+
+        this.labels[row][column].setIcon(icon);
+    }
+
+    public void end() {
+        this.frame.dispose();
+        new MainMenuForm(new Point(0, 0));
     }
 
     private void saveGame() {
@@ -110,7 +141,7 @@ public class GameWindow {
                 int y = this.difficulty.getIndentationY() + i * Square.SIZE;
                 imageLabel.setBounds(this.difficulty.getIndentationX() + j * Square.SIZE,  this.difficulty.getIndentationY() + i * Square.SIZE, Square.SIZE, Square.SIZE);
                 this.labels[i][j] = imageLabel;
-                this.frame.add(imageLabel, BorderLayout.CENTER);
+                this.frame.add(imageLabel);
             }
         }
     }

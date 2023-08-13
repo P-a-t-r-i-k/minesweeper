@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
-public class Game {
+public class Game implements Serializable {
     public static final String TITLE = "Minesweeper";
     public static final String LEADERBOARD_FILE = ".\\leaderboard.ldr";
     public static final int VERSION = 1;
@@ -10,8 +10,7 @@ public class Game {
     private final Square[][] squares;
     private GameStatus gameStatus;
     private final Difficulty difficulty;
-    private final int maximumNumberOfMines;
-    private int currentNumberOfMines;
+    private int hiddenSquares;
     private boolean saved;
     private final ArrayList<LeaderboardEntry> leaderboard;
     private final GameWindow gameWindow;
@@ -21,8 +20,7 @@ public class Game {
         this.gameWindow = gameWindow;
 
         this.difficulty = difficulty;
-        this.maximumNumberOfMines = difficulty.getMines();
-        this.currentNumberOfMines = difficulty.getMines();
+        this.hiddenSquares = difficulty.getHeight() * difficulty.getWidth();
 
         this.squares = new Square[difficulty.getHeight()][difficulty.getWidth()];
         this.createMines(this.createIndexesOfSquaresWithMines());
@@ -33,14 +31,18 @@ public class Game {
     }
 
     public void clickSquare(int row, int column) {
-        this.squares[row][column].setClicked(true);
-        this.gameWindow.changeLabelIconLeftClick(row, column, this.squares[row][column]);
+        if (!this.squares[row][column].isClicked()) {
+            this.squares[row][column].setClicked(true);
+            this.hiddenSquares--;
+            this.gameWindow.changeLabelIconLeftClick(row, column, this.squares[row][column]);
 
-        if (this.squares[row][column].getSquareStatus() == SquareStatus.EMPTY) {
-            this.showNearbyEmptySquares(this.squares[row][column]);
-        } else if (this.squares[row][column].getSquareStatus() == SquareStatus.MINE) {
-            this.gameStatus = GameStatus.LOSS;
+            if (this.squares[row][column].getSquareStatus() == SquareStatus.EMPTY) {
+                this.showNearbyEmptySquares(this.squares[row][column]);
+            } else if (this.squares[row][column].getSquareStatus() == SquareStatus.MINE) {
+                this.gameStatus = GameStatus.LOSS;
+            }
         }
+        System.out.println(this.hiddenSquares);
     }
 
     public void flagSquare(int row, int column) {
@@ -62,6 +64,10 @@ public class Game {
 
     public GameStatus getGameStatus() {
         return this.gameStatus;
+    }
+
+    public void saveGame(int saveSlot) {
+        System.out.println(saveSlot);
     }
 
     private Difficulty getDifficulty() {
@@ -92,7 +98,7 @@ public class Game {
     }
 
     private int[] createIndexesOfSquaresWithMines() {
-        int[] indexesOfSquaresWithMines = new int[this.currentNumberOfMines];
+        int[] indexesOfSquaresWithMines = new int[this.difficulty.getMines()];
         ArrayList<Integer> usedIndexes = new ArrayList<>();
         Random random = new Random(2048);
 
@@ -155,6 +161,7 @@ public class Game {
             squaresToCheck.remove(currentSquare);
             currentSquare.setClicked(true);
             this.gameWindow.changeLabelIconLeftClick(currentSquare.getRow(), currentSquare.getColumn(), currentSquare);
+            this.hiddenSquares--;
 
             this.addNearbyEmptySquares(currentSquare, squaresToCheck);
         }
@@ -179,6 +186,7 @@ public class Game {
                 } else if (this.squares[currentSquare.getRow() + i][currentSquare.getColumn() + j].getSquareStatus() == SquareStatus.NUMBER) {
                     this.squares[currentSquare.getRow() + i][currentSquare.getColumn() + j].setClicked(true);
                     this.gameWindow.changeLabelIconLeftClick(currentSquare.getRow() + i, currentSquare.getColumn() + j, this.squares[currentSquare.getRow() + i][currentSquare.getColumn() + j]);
+                    this.hiddenSquares--;
                 }
             }
         }

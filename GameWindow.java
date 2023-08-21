@@ -14,10 +14,8 @@ public class GameWindow implements Serializable {
     private final JLabel[][] labels;
     private final Game game;
     private final JFrame frame;
-    private JPanel buttonPanel;
-    private JButton saveGameButton;
-    private JButton mainMenuButton;
-    private Point location;
+    private final JButton saveGameButton;
+    private final JButton mainMenuButton;
 
     public GameWindow(Difficulty difficulty, Point location) {
         this.frame = new JFrame(Game.TITLE);
@@ -25,8 +23,6 @@ public class GameWindow implements Serializable {
         this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.frame.setSize(GameWindow.WIDTH, GameWindow.HEIGHT);
         this.labels = new JLabel[difficulty.getHeight()][difficulty.getWidth()];
-
-        this.location = location;
 
         this.difficulty = difficulty;
         this.addImageLabels();
@@ -36,14 +32,14 @@ public class GameWindow implements Serializable {
 
         this.game = new Game(difficulty, this);
 
-        this.buttonPanel = new JPanel();
-        this.frame.add(this.buttonPanel, BorderLayout.SOUTH);
+        JPanel buttonPanel = new JPanel();
+        this.frame.add(buttonPanel, BorderLayout.SOUTH);
 
         this.saveGameButton = new JButton("Save Game");
-        this.buttonPanel.add(this.saveGameButton);
+        buttonPanel.add(this.saveGameButton);
 
         this.mainMenuButton = new JButton("Main Menu");
-        this.buttonPanel.add(this.mainMenuButton);
+        buttonPanel.add(this.mainMenuButton);
 
         this.run();
     }
@@ -62,7 +58,7 @@ public class GameWindow implements Serializable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                new MainMenuForm(GameWindow.this.location);
+                new MainMenuForm(GameWindow.this.frame.getLocation());
             }
         });
 
@@ -74,8 +70,12 @@ public class GameWindow implements Serializable {
                 boolean pressedLeftButton = e.getButton() == 1;
                 boolean pressedRightButton = e.getButton() == 3;
 
-                int row = (int)((e.getLocationOnScreen().getY() - GameWindow.this.difficulty.getIndentationY()) / Square.SIZE);
-                int column = (int)((e.getLocationOnScreen().getX() - GameWindow.this.difficulty.getIndentationX()) / Square.SIZE);
+                double upperBar = 30;
+                double mouseLocationX = e.getLocationOnScreen().getX() - GameWindow.this.frame.getLocation().getX();
+                double mouseLocationY = e.getLocationOnScreen().getY() - GameWindow.this.frame.getLocation().getY() - upperBar;
+
+                int row = (int)((mouseLocationY - GameWindow.this.difficulty.getIndentationY()) / Square.SIZE);
+                int column = (int)((mouseLocationX - GameWindow.this.difficulty.getIndentationX()) / Square.SIZE);
 
                 if (pressedLeftButton) {
                     GameWindow.this.game.clickSquare(row, column);
@@ -124,7 +124,7 @@ public class GameWindow implements Serializable {
 
     public void end() {
         this.frame.dispose();
-        new MainMenuForm(new Point(0, 0));
+        new MainMenuForm(this.frame.getLocation());
     }
 
     private void saveGame() {
@@ -137,10 +137,6 @@ public class GameWindow implements Serializable {
         } else {
             this.chooseSaveSlot();
         }
-    }
-
-    private void loadGame(int chosedSaveSlot) {
-
     }
 
     private void chooseSaveSlot() {

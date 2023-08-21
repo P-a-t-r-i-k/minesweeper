@@ -31,6 +31,13 @@ public class Game implements Serializable {
     }
 
     public void clickSquare(int row, int column) {
+        if (row < 0 || row >= this.squares.length) {
+            return;
+        }
+        if (column < 0 || column >= this.squares[row].length) {
+            return;
+        }
+
         if (!this.squares[row][column].isClicked()) {
             this.squares[row][column].setClicked(true);
             this.hiddenSquares--;
@@ -42,10 +49,16 @@ public class Game implements Serializable {
                 this.gameStatus = GameStatus.LOSS;
             }
         }
-        System.out.println(this.hiddenSquares);
     }
 
     public void flagSquare(int row, int column) {
+        if (row < 0 || row >= this.squares.length) {
+            return;
+        }
+        if (column < 0 || column >= this.squares[row].length) {
+            return;
+        }
+
         this.squares[row][column].setFlagged(!this.squares[row][column].isFlagged());
         this.gameWindow.changeLabelIconRightClick(row, column, this.squares[row][column]);
     }

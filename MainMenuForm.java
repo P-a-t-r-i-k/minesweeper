@@ -64,9 +64,9 @@ public class MainMenuForm {
             frame.dispose();
             gameWindow.run();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "An error occured while saving the game.");
+            JOptionPane.showMessageDialog(null, "An error occured while loading the game.");
         } catch (ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(null, "An error occured while saving the game.");
+            JOptionPane.showMessageDialog(null, "An error occured while loading the game.");
         }
     }
 }

@@ -82,6 +82,9 @@ public class GameWindow implements Serializable {
 
                     if (GameWindow.this.game.getGameStatus() == GameStatus.WIN) {
                         JOptionPane.showMessageDialog(null,"You WON!");
+                        if (!GameWindow.this.game.isSaved()) {
+                            GameWindow.this.game.changeLeaderboard();
+                        }
                         GameWindow.this.end();
                     } else if (GameWindow.this.game.getGameStatus() == GameStatus.LOSS) {
                         JOptionPane.showMessageDialog(null, "You LOST!");
@@ -165,6 +168,10 @@ public class GameWindow implements Serializable {
     }
 
     private void addImageLabels() {
+        JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(null);
+        this.frame.add(labelPanel);
+
         for (int i = 0; i < this.difficulty.getHeight(); i++) {
             for (int j = 0; j < this.difficulty.getWidth(); j++) {
                 JLabel imageLabel = new JLabel(new ImageIcon(".\\images\\unclicked.png"));
@@ -172,7 +179,7 @@ public class GameWindow implements Serializable {
                 int y = this.difficulty.getIndentationY() + i * Square.SIZE;
                 imageLabel.setBounds(this.difficulty.getIndentationX() + j * Square.SIZE,  this.difficulty.getIndentationY() + i * Square.SIZE, Square.SIZE, Square.SIZE);
                 this.labels[i][j] = imageLabel;
-                this.frame.add(imageLabel);
+                labelPanel.add(imageLabel);
             }
         }
     }

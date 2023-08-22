@@ -48,7 +48,13 @@ public class Game implements Serializable {
             } else if (this.squares[row][column].getSquareStatus() == SquareStatus.MINE) {
                 this.gameStatus = GameStatus.LOSS;
             }
+
+            if (this.hiddenSquares == this.difficulty.getMines()) {
+                this.gameStatus = GameStatus.WIN;
+            }
         }
+
+        System.out.println(this.hiddenSquares);
     }
 
     public void flagSquare(int row, int column) {
@@ -172,9 +178,12 @@ public class Game implements Serializable {
         while (!squaresToCheck.isEmpty()) {
             Square currentSquare = squaresToCheck.get(0);
             squaresToCheck.remove(currentSquare);
-            currentSquare.setClicked(true);
             this.gameWindow.changeLabelIconLeftClick(currentSquare.getRow(), currentSquare.getColumn(), currentSquare);
-            this.hiddenSquares--;
+
+            if (!currentSquare.isClicked()) {
+                currentSquare.setClicked(true);
+                this.hiddenSquares--;
+            }
 
             this.addNearbyEmptySquares(currentSquare, squaresToCheck);
         }
@@ -205,18 +214,32 @@ public class Game implements Serializable {
         }
     }
 
-    private void changeLeaderboard() throws IOException {
+    public void changeLeaderboard() {
         int timeBonus = 4000; // change time bonus later
         int currentScore = this.getDifficulty().getDifficultyBonus() + timeBonus;
 
-        this.loadLeaderboard();
+        try {
+            this.loadLeaderboard();
+        } catch (IOException e) {
+            System.out.println("Hello");
+        }
 
-        int minScoreInLeaderboard = this.leaderboard.get(this.leaderboard.size() - 1).getScore();
+        int minScoreInLeaderboard;
+        if (this.leaderboard.size() == 0) {
+            minScoreInLeaderboard = 0;
+        } else {
+            minScoreInLeaderboard = this.leaderboard.get(this.leaderboard.size() - 1).getScore();
+        }
+
         if (this.leaderboard.size() < Game.LEADERBOARD_SIZE || currentScore > minScoreInLeaderboard) {
             this.addLeaderboardEntry(currentScore);
         }
 
-        this.saveLeaderboard();
+        try {
+            this.saveLeaderboard();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadLeaderboard() throws IOException {

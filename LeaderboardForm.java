@@ -11,12 +11,13 @@ public class LeaderboardForm {
     private JPanel buttonPanel;
     private JButton mainMenuButton;
     private JTable leaderboardTable;
+    private JButton resetLeaderboardButton;
 
     public LeaderboardForm(Point location) {
         JFrame frame = new JFrame(Game.TITLE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(this.mainPanel);
-        frame.setSize(250, 160);
+        frame.setSize(350, 160);
         frame.setVisible(true);
         frame.setLocation(location);
 
@@ -40,6 +41,27 @@ public class LeaderboardForm {
                 new MainMenuForm(location);
             }
         });
+
+        this.resetLeaderboardButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    LeaderboardForm.this.resetLeaderboard();
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "An error occurred while reseting the leaderboard.");
+                }
+                frame.dispose();
+                new LeaderboardForm(location);
+            }
+        });
+    }
+
+    private void resetLeaderboard() throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(new File(Game.LEADERBOARD_FILE));
+        DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
+
+        dataOutputStream.writeUTF("");
+        dataOutputStream.close();
     }
 
     private void addRows(DefaultTableModel model) throws IOException {

@@ -1,5 +1,5 @@
 public enum Difficulty {
-    BEGINNER(10, 10, 10, 365, 130),
+    BEGINNER(10, 10, 10, 370, 130),
     INTERMEDIATE(16, 16, 40, 265, 40),
     EXPERT(30, 16, 99, 40, 40);
 

@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 import java.io.*;
 
 public class GameWindow implements Serializable {
-    public static final int WIDTH = 1060;
+    public static final int WIDTH = 1170;
     public static final int HEIGHT = 640;
     private JPanel mainPanel;
     private final Difficulty difficulty;
@@ -16,6 +16,11 @@ public class GameWindow implements Serializable {
     private final JFrame frame;
     private final JButton saveGameButton;
     private final JButton mainMenuButton;
+    private int gameTime;
+    private final NumberDisplay flagDisplay;
+    private final JLabel[] flagLabels;
+    private final NumberDisplay timeDisplay;
+    private final JLabel[] timeLabels;
 
     public GameWindow(Difficulty difficulty, Point location) {
         this.frame = new JFrame(Game.TITLE);
@@ -25,12 +30,16 @@ public class GameWindow implements Serializable {
         this.labels = new JLabel[difficulty.getHeight()][difficulty.getWidth()];
 
         this.difficulty = difficulty;
+        this.game = new Game(difficulty, this);
+
+        this.flagDisplay = new NumberDisplay();
+        this.flagLabels = new JLabel[NumberDisplay.DISPLAY_SIZE];
+        this.timeDisplay = new NumberDisplay();
+        this.timeLabels = new JLabel[NumberDisplay.DISPLAY_SIZE];
         this.addImageLabels();
 
         this.frame.setVisible(true);
         this.frame.setLocation(location);
-
-        this.game = new Game(difficulty, this);
 
         JPanel buttonPanel = new JPanel();
         this.frame.add(buttonPanel, BorderLayout.SOUTH);
@@ -41,11 +50,23 @@ public class GameWindow implements Serializable {
         this.mainMenuButton = new JButton("Main Menu");
         buttonPanel.add(this.mainMenuButton);
 
+        this.gameTime = 0;
         this.run();
     }
 
     public void run() {
         this.frame.setVisible(true);
+
+        ActionListener updateClockAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GameWindow.this.gameTime++;
+                GameWindow.this.changeNumberLabels(GameWindow.this.gameTime, GameWindow.this.timeLabels, GameWindow.this.timeDisplay);
+            }
+        };
+
+        Timer timer = new Timer(1000, updateClockAction);
+        timer.start();
 
         this.saveGameButton.addActionListener(new ActionListener() {
             @Override
@@ -57,6 +78,7 @@ public class GameWindow implements Serializable {
         this.mainMenuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                timer.stop();
                 frame.dispose();
                 new MainMenuForm(GameWindow.this.frame.getLocation());
             }
@@ -71,7 +93,8 @@ public class GameWindow implements Serializable {
                 boolean pressedRightButton = e.getButton() == 3;
 
                 double upperBar = 30;
-                double mouseLocationX = e.getLocationOnScreen().getX() - GameWindow.this.frame.getLocation().getX();
+                double leftSideBar = 55;
+                double mouseLocationX = e.getLocationOnScreen().getX() - GameWindow.this.frame.getLocation().getX() - leftSideBar;
                 double mouseLocationY = e.getLocationOnScreen().getY() - GameWindow.this.frame.getLocation().getY() - upperBar;
 
                 int row = (int)((mouseLocationY - GameWindow.this.difficulty.getIndentationY()) / Square.SIZE);
@@ -81,12 +104,14 @@ public class GameWindow implements Serializable {
                     GameWindow.this.game.clickSquare(row, column);
 
                     if (GameWindow.this.game.getGameStatus() == GameStatus.WIN) {
+                        timer.stop();
                         JOptionPane.showMessageDialog(null,"You WON!");
                         if (!GameWindow.this.game.isSaved()) {
                             GameWindow.this.game.changeLeaderboard();
                         }
                         GameWindow.this.end();
                     } else if (GameWindow.this.game.getGameStatus() == GameStatus.LOSS) {
+                        timer.stop();
                         JOptionPane.showMessageDialog(null, "You LOST!");
                         GameWindow.this.end();
                     }
@@ -100,6 +125,9 @@ public class GameWindow implements Serializable {
     }
 
     public void changeLabelIconLeftClick(int row, int column, Square square) {
+        //this.addFlagIfRemovedByLeftClick(square);
+        this.changeNumberLabels(this.game.getFlagsLeft(), this.flagLabels, this.flagDisplay);
+
         ImageIcon imageIcon;
 
         if (square.getSquareStatus() == SquareStatus.MINE) {
@@ -118,16 +146,27 @@ public class GameWindow implements Serializable {
 
         if (!square.isClicked() && square.isFlagged()) {
             icon = new ImageIcon(".\\images\\flag.png");
-        } else if (!square.isClicked()) {
+        } else if (!square.isClicked() && !square.isFlagged()) {
             icon = new ImageIcon(".\\images\\unclicked.png");
         }
 
         this.labels[row][column].setIcon(icon);
+        this.changeNumberLabels(this.game.getFlagsLeft(), this.flagLabels, this.flagDisplay);
     }
 
     public void end() {
         this.frame.dispose();
         new MainMenuForm(this.frame.getLocation());
+    }
+
+    public void addFlagIfRemovedByLeftClick(Square square) {
+        if (square.isFlagged()) {
+            //this.flagsLeft++;
+        }
+    }
+
+    public int getGameTime() {
+        return this.gameTime;
     }
 
     private void saveGame() {
@@ -168,19 +207,51 @@ public class GameWindow implements Serializable {
     }
 
     private void addImageLabels() {
-        JPanel labelPanel = new JPanel();
-        labelPanel.setLayout(null);
+        JPanel leftSidePanel = new JPanel();
+        this.frame.add(leftSidePanel, BorderLayout.WEST);
+
+        JPanel timePanel = new JPanel(new GridLayout(1, 3));
+        leftSidePanel.add(timePanel, BorderLayout.NORTH);
+
+        for (int i = 0; i < 3; i++) {
+            JLabel jLabel = new JLabel(new ImageIcon(".\\images\\timer_0.png"));
+            timePanel.add(jLabel);
+            this.timeLabels[i] = jLabel;
+        }
+
+
+        JPanel rightSidePanel = new JPanel();
+        this.frame.add(rightSidePanel, BorderLayout.EAST);
+
+        JPanel flagsLeftPanel = new JPanel(new GridLayout(1, 3));
+        rightSidePanel.add(flagsLeftPanel, BorderLayout.CENTER);
+
+        for (int i = 0; i < 3; i++) {
+            JLabel jLabel = new JLabel();
+            flagsLeftPanel.add(jLabel);
+            this.flagLabels[i] = jLabel;
+        }
+        this.changeNumberLabels(this.game.getFlagsLeft(), this.flagLabels, this.flagDisplay);
+
+
+        JPanel labelPanel = new JPanel(null);
         this.frame.add(labelPanel);
 
         for (int i = 0; i < this.difficulty.getHeight(); i++) {
             for (int j = 0; j < this.difficulty.getWidth(); j++) {
                 JLabel imageLabel = new JLabel(new ImageIcon(".\\images\\unclicked.png"));
-                int x = this.difficulty.getIndentationX() + j * Square.SIZE;
-                int y = this.difficulty.getIndentationY() + i * Square.SIZE;
                 imageLabel.setBounds(this.difficulty.getIndentationX() + j * Square.SIZE,  this.difficulty.getIndentationY() + i * Square.SIZE, Square.SIZE, Square.SIZE);
                 this.labels[i][j] = imageLabel;
                 labelPanel.add(imageLabel);
             }
+        }
+    }
+
+    private void changeNumberLabels(int newNumber, JLabel[] labels, NumberDisplay numberDisplay) {
+        numberDisplay.changeNumber(newNumber);
+
+        for (int i = 0; i < labels.length; i++) {
+            labels[i].setIcon(new ImageIcon(".\\images\\timer_" + numberDisplay.getFigure(i) + ".png"));
         }
     }
 }

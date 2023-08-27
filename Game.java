@@ -14,6 +14,7 @@ public class Game implements Serializable {
     private boolean saved;
     private final ArrayList<LeaderboardEntry> leaderboard;
     private final GameWindow gameWindow;
+    private int flagsLeft;
 
     public Game(Difficulty difficulty, GameWindow gameWindow) {
         this.gameStatus = GameStatus.UNFINISHED;
@@ -28,6 +29,8 @@ public class Game implements Serializable {
 
         this.saved = false;
         this.leaderboard = new ArrayList<>();
+
+        this.flagsLeft = this.difficulty.getMines();
     }
 
     public void clickSquare(int row, int column) {
@@ -41,6 +44,7 @@ public class Game implements Serializable {
         if (!this.squares[row][column].isClicked()) {
             this.squares[row][column].setClicked(true);
             this.hiddenSquares--;
+            this.addFlagIfRemovedByLeftClick(this.squares[row][column]);
             this.gameWindow.changeLabelIconLeftClick(row, column, this.squares[row][column]);
 
             if (this.squares[row][column].getSquareStatus() == SquareStatus.EMPTY) {
@@ -53,8 +57,6 @@ public class Game implements Serializable {
                 this.gameStatus = GameStatus.WIN;
             }
         }
-
-        System.out.println(this.hiddenSquares);
     }
 
     public void flagSquare(int row, int column) {
@@ -65,7 +67,17 @@ public class Game implements Serializable {
             return;
         }
 
-        this.squares[row][column].setFlagged(!this.squares[row][column].isFlagged());
+        Square square = this.squares[row][column];
+        if (square.isClicked()) {
+            return;
+        } else if (!square.isFlagged() && this.flagsLeft > 0) {
+            square.setFlagged(true);
+            this.flagsLeft--;
+        } else if (square.isFlagged()) {
+            square.setFlagged(false);
+            this.flagsLeft++;
+        }
+
         this.gameWindow.changeLabelIconRightClick(row, column, this.squares[row][column]);
     }
 
@@ -83,6 +95,10 @@ public class Game implements Serializable {
 
     public GameStatus getGameStatus() {
         return this.gameStatus;
+    }
+
+    public int getFlagsLeft() {
+        return this.flagsLeft;
     }
 
     public void saveGame(int saveSlot) {
@@ -119,7 +135,7 @@ public class Game implements Serializable {
     private int[] createIndexesOfSquaresWithMines() {
         int[] indexesOfSquaresWithMines = new int[this.difficulty.getMines()];
         ArrayList<Integer> usedIndexes = new ArrayList<>();
-        Random random = new Random(2048);
+        Random random = new Random();
 
 
         for (int i = 0; i < indexesOfSquaresWithMines.length; i++) {
@@ -178,10 +194,11 @@ public class Game implements Serializable {
         while (!squaresToCheck.isEmpty()) {
             Square currentSquare = squaresToCheck.get(0);
             squaresToCheck.remove(currentSquare);
-            this.gameWindow.changeLabelIconLeftClick(currentSquare.getRow(), currentSquare.getColumn(), currentSquare);
 
             if (!currentSquare.isClicked()) {
                 currentSquare.setClicked(true);
+                this.gameWindow.changeLabelIconLeftClick(currentSquare.getRow(), currentSquare.getColumn(), currentSquare);
+                this.addFlagIfRemovedByLeftClick(square);
                 this.hiddenSquares--;
             }
 
@@ -207,6 +224,7 @@ public class Game implements Serializable {
                     }
                 } else if (this.squares[currentSquare.getRow() + i][currentSquare.getColumn() + j].getSquareStatus() == SquareStatus.NUMBER) {
                     this.squares[currentSquare.getRow() + i][currentSquare.getColumn() + j].setClicked(true);
+                    this.addFlagIfRemovedByLeftClick(this.squares[currentSquare.getRow() + i][currentSquare.getColumn() + j]);
                     this.gameWindow.changeLabelIconLeftClick(currentSquare.getRow() + i, currentSquare.getColumn() + j, this.squares[currentSquare.getRow() + i][currentSquare.getColumn() + j]);
                     this.hiddenSquares--;
                 }
@@ -215,13 +233,13 @@ public class Game implements Serializable {
     }
 
     public void changeLeaderboard() {
-        int timeBonus = 4000; // change time bonus later
+        int timeBonus = this.getTimeBonus();
         int currentScore = this.getDifficulty().getDifficultyBonus() + timeBonus;
 
         try {
             this.loadLeaderboard();
         } catch (IOException e) {
-            System.out.println("Hello");
+
         }
 
         int minScoreInLeaderboard;
@@ -271,6 +289,10 @@ public class Game implements Serializable {
         }
 
         String playerName = JOptionPane.showInputDialog("You reached score " + score + " and placed yourself in the leaderboard. Please enter your name:");
+        if (playerName == null) {
+            playerName = "Unknown";
+        }
+
         this.leaderboard.add(new LeaderboardEntry(playerName, score));
         Collections.sort(this.leaderboard);
         Collections.reverse(this.leaderboard);
@@ -284,6 +306,23 @@ public class Game implements Serializable {
         for (LeaderboardEntry leaderboardEntry : this.leaderboard) {
             dataOutputStream.writeUTF(leaderboardEntry.getName());
             dataOutputStream.writeInt(leaderboardEntry.getScore());
+        }
+    }
+
+    private int getTimeBonus() {
+        int maxGameTimeToGetBonus = 1000;
+        int bonus = maxGameTimeToGetBonus - this.gameWindow.getGameTime();
+
+        if (bonus < 0) {
+            bonus = 0;
+        }
+
+        return bonus;
+    }
+
+    private void addFlagIfRemovedByLeftClick(Square square) {
+        if (square.isFlagged()) {
+            this.flagsLeft++;
         }
     }
 }

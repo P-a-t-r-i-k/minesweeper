@@ -1,9 +1,17 @@
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JTable;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
+import java.awt.Point;
+import java.io.File;
+import java.io.IOException;
+import java.io.EOFException;
+import java.io.FileOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.DataInputStream;
 
 public class LeaderboardForm {
     private JPanel mainPanel;
@@ -21,7 +29,7 @@ public class LeaderboardForm {
         frame.setVisible(true);
         frame.setLocation(location);
 
-        DefaultTableModel model = (DefaultTableModel) this.leaderboardTable.getModel();
+        DefaultTableModel model = (DefaultTableModel)this.leaderboardTable.getModel();
         model.addColumn("Player");
         model.addColumn("Score");
 
@@ -34,25 +42,19 @@ public class LeaderboardForm {
         frame.revalidate();
         frame.repaint();
 
-        this.mainMenuButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new MainMenuForm(location);
-            }
+        this.mainMenuButton.addActionListener(e -> {
+            frame.dispose();
+            new MainMenuForm(location);
         });
 
-        this.resetLeaderboardButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    LeaderboardForm.this.resetLeaderboard();
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "An error occurred while reseting the leaderboard.");
-                }
-                frame.dispose();
-                new LeaderboardForm(location);
+        this.resetLeaderboardButton.addActionListener(e -> {
+            try {
+                LeaderboardForm.this.resetLeaderboard();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "An error occurred while reseting the leaderboard.");
             }
+            frame.dispose();
+            new LeaderboardForm(location);
         });
     }
 

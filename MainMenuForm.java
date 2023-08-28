@@ -1,7 +1,9 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import java.awt.Point;
+import java.awt.Frame;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -22,35 +24,19 @@ public class MainMenuForm {
         frame.setVisible(true);
         frame.setLocation(location);
 
-        this.newGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new ChooseDifficultyForm(frame.getLocation());
-            }
+        this.newGameButton.addActionListener(e -> {
+            frame.dispose();
+            new ChooseDifficultyForm(frame.getLocation());
         });
 
-        this.loadGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MainMenuForm.this.loadGame(frame);
-            }
+        this.loadGameButton.addActionListener(e -> MainMenuForm.this.loadGame(frame));
+
+        this.leaderboardButton.addActionListener(e -> {
+            frame.dispose();
+            new LeaderboardForm(frame.getLocation());
         });
 
-        this.leaderboardButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new LeaderboardForm(frame.getLocation());
-            }
-        });
-
-        this.exitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-            }
-        });
+        this.exitButton.addActionListener(e -> frame.dispose());
     }
 
     private void loadGame(Frame frame) {
@@ -60,7 +46,7 @@ public class MainMenuForm {
         try {
             FileInputStream fileInputStream = new FileInputStream(".\\saves\\save_slot" + (chosedSaveSlot + 1) + ".sav");
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            GameWindow gameWindow = (GameWindow) objectInputStream.readObject();
+            GameWindow gameWindow = (GameWindow)objectInputStream.readObject();
             frame.dispose();
             gameWindow.run();
         } catch (IOException e) {

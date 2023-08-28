@@ -1,15 +1,25 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.Timer;
+import java.awt.Point;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.*;
+import java.io.Serializable;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
 
 public class GameWindow implements Serializable {
     public static final int WIDTH = 1170;
     public static final int HEIGHT = 640;
-    private JPanel mainPanel;
     private final Difficulty difficulty;
     private final JLabel[][] labels;
     private final Game game;
@@ -57,31 +67,20 @@ public class GameWindow implements Serializable {
     public void run() {
         this.frame.setVisible(true);
 
-        ActionListener updateClockAction = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                GameWindow.this.gameTime++;
-                GameWindow.this.changeNumberLabels(GameWindow.this.gameTime, GameWindow.this.timeLabels, GameWindow.this.timeDisplay);
-            }
+        ActionListener updateClockAction = e -> {
+            GameWindow.this.gameTime++;
+            GameWindow.this.changeNumberLabels(GameWindow.this.gameTime, GameWindow.this.timeLabels, GameWindow.this.timeDisplay);
         };
 
         Timer timer = new Timer(1000, updateClockAction);
         timer.start();
 
-        this.saveGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                GameWindow.this.saveGame();
-            }
-        });
+        this.saveGameButton.addActionListener(e -> GameWindow.this.saveGame());
 
-        this.mainMenuButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                timer.stop();
-                frame.dispose();
-                new MainMenuForm(GameWindow.this.frame.getLocation());
-            }
+        this.mainMenuButton.addActionListener(e -> {
+            timer.stop();
+            this.frame.dispose();
+            new MainMenuForm(GameWindow.this.frame.getLocation());
         });
 
         MouseAdapter mouseAdapter = new MouseAdapter() {
@@ -105,7 +104,7 @@ public class GameWindow implements Serializable {
 
                     if (GameWindow.this.game.getGameStatus() == GameStatus.WIN) {
                         timer.stop();
-                        JOptionPane.showMessageDialog(null,"You WON!");
+                        JOptionPane.showMessageDialog(null, "You WON!");
                         if (!GameWindow.this.game.isSaved()) {
                             GameWindow.this.game.changeLeaderboard();
                         }
@@ -125,9 +124,6 @@ public class GameWindow implements Serializable {
     }
 
     public void changeLabelIconLeftClick(int row, int column, Square square) {
-        //this.addFlagIfRemovedByLeftClick(square);
-        this.changeNumberLabels(this.game.getFlagsLeft(), this.flagLabels, this.flagDisplay);
-
         ImageIcon imageIcon;
 
         if (square.getSquareStatus() == SquareStatus.MINE) {
@@ -139,6 +135,7 @@ public class GameWindow implements Serializable {
         }
 
         this.labels[row][column].setIcon(imageIcon);
+        this.changeNumberLabels(this.game.getFlagsLeft(), this.flagLabels, this.flagDisplay);
     }
 
     public void changeLabelIconRightClick(int row, int column, Square square) {
@@ -157,12 +154,6 @@ public class GameWindow implements Serializable {
     public void end() {
         this.frame.dispose();
         new MainMenuForm(this.frame.getLocation());
-    }
-
-    public void addFlagIfRemovedByLeftClick(Square square) {
-        if (square.isFlagged()) {
-            //this.flagsLeft++;
-        }
     }
 
     public int getGameTime() {

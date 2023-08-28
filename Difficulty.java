@@ -11,7 +11,7 @@ public enum Difficulty {
     private final int indentationY;
 
 
-    private Difficulty(int width, int height, int mines, int indentationX, int indentationY) {
+    Difficulty(int width, int height, int mines, int indentationX, int indentationY) {
         this.width = width;
         this.height = height;
         this.mines = mines;

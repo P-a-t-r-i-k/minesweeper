@@ -1,6 +1,16 @@
-import javax.swing.*;
-import java.io.*;
-import java.util.*;
+import javax.swing.JOptionPane;
+import java.io.Serializable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.EOFException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
 
 public class Game implements Serializable {
     public static final String TITLE = "Minesweeper";
@@ -87,10 +97,6 @@ public class Game implements Serializable {
 
     public void setSaved(boolean saved) {
         this.saved = saved;
-    }
-
-    public Square getSquare(int row, int column) {
-        return this.squares[row][column];
     }
 
     public GameStatus getGameStatus() {

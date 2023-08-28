@@ -1,7 +1,7 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import java.awt.Point;
 
 public class ChooseDifficultyForm {
     private JPanel mainPanel;
@@ -19,30 +19,21 @@ public class ChooseDifficultyForm {
         frame.setLocation(location);
 
 
-        this.beginnerDiffButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new GameWindow(Difficulty.BEGINNER, location);
-            }
+        this.beginnerDiffButton.addActionListener(e -> {
+            frame.dispose();
+            new GameWindow(Difficulty.BEGINNER, location);
         });
 
 
-        this.intermediateDiffButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new GameWindow(Difficulty.INTERMEDIATE, location);
-            }
+        this.intermediateDiffButton.addActionListener(e -> {
+            frame.dispose();
+            new GameWindow(Difficulty.INTERMEDIATE, location);
         });
 
 
-        this.expertDiffButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                new GameWindow(Difficulty.EXPERT, location);
-            }
+        this.expertDiffButton.addActionListener(e -> {
+            frame.dispose();
+            new GameWindow(Difficulty.EXPERT, location);
         });
     }
 }

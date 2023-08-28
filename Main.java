@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Point;
 
 public class Main {
     private static GameWindow gameWindow;

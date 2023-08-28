@@ -5,11 +5,12 @@ public class NumberDisplay implements Serializable {
     private final int[] figures;
 
     public NumberDisplay() {
-        this.figures = new int[NumberDisplay.DISPLAY_SIZE];
+        this.figures = new int[DISPLAY_SIZE];
     }
 
     public void changeNumber(int newNumber) {
-        if (newNumber / 1000 != 0) {
+        boolean isBiggerThanDisplaySize = newNumber >= (int)Math.pow(10, DISPLAY_SIZE);
+        if (isBiggerThanDisplaySize) {
             newNumber = 999;
         }
 

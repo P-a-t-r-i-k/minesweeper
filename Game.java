@@ -107,10 +107,6 @@ public class Game implements Serializable {
         return this.flagsLeft;
     }
 
-    public void saveGame(int saveSlot) {
-        System.out.println(saveSlot);
-    }
-
     private Difficulty getDifficulty() {
         return this.difficulty;
     }

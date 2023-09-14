@@ -177,21 +177,18 @@ public class GameWindow implements Serializable {
         int chosedSaveSlot = JOptionPane.showOptionDialog(null, "Choose the save slot where your game will be saved. If there is already saved game, it will be overridden.", "Click a button", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, saveSlots, saveSlots[0]);
 
         if (chosedSaveSlot != -1) {
-            boolean saved = true;
-            this.game.saveGame(chosedSaveSlot + 1);
-
             try {
+                this.game.setSaved(true);
                 FileOutputStream fileOutputStream = new FileOutputStream(".\\saves\\save_slot" + (chosedSaveSlot + 1) + ".sav");
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
                 objectOutputStream.writeObject(this);
                 objectOutputStream.close();
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "An error occured while saving the game.");
-                saved = false;
+                this.game.setSaved(false);
             }
 
-            if (saved) {
-                this.game.setSaved(true);
+            if (this.game.isSaved()) {
                 JOptionPane.showMessageDialog(null, "Game saved.");
             }
         }
